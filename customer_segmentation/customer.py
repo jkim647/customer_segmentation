@@ -11,7 +11,7 @@ import seaborn as sns
 import plotly.offline as po
 import plotly.graph_objs as gobj
 
-url = '/Users/zangjialin/AUT/AUT/Data Warehouse and Big Data'
+url = '/Users/zangjialin/AUT/AUT/Data Warehouse and Big Data/data.csv'
 
 Rtl_data = pd.read_csv(url, encoding='unicode_escape')
 
@@ -75,15 +75,11 @@ ax = sns.distplot(x)
 RFMScores.Monetary.describe()
 
 # Monateray distribution plot, taking observations which have monetary value less than 10000
-import seaborn as sns
-
-x = RFMScores.query('Monetary < 10000')['Monetary']
-
-ax = sns.distplot(x)
 
 # Split into four segments using quantiles
-quantiles = RFMScores.quantile(q=[0.25, 0.5, 0.75])
+quantiles= RFMScores.quantile(q = [0.2,0.4,0.6,0.8])
 quantiles = quantiles.to_dict()
+
 
 
 
@@ -129,79 +125,80 @@ RFMScores['RFMGroup'] = RFMScores.R.map(str) + RFMScores.F.map(str) + RFMScores.
 # Calculate and Add RFMScore value column showing total sum of RFMGroup values
 RFMScores['RFMScore'] = RFMScores[['R', 'F', 'M']].sum(axis=1)
 RFMScores.head()
+print(RFMScores.head())
+#
+# # In[26]:
+#
+#
+# # Assign Loyalty Level to each customer
+# Loyalty_Level = ['Platinum', 'Gold', 'Silver', 'Bronze']
+# Score_cuts = pd.qcut(RFMScores.RFMScore, q=4, labels=Loyalty_Level)
+# RFMScores['RFM_Loyalty_Level'] = Score_cuts.values
+# RFMScores.reset_index().head()
+#
+# # Validate the data for RFMGroup = 111
+# RFMScores[RFMScores['RFMGroup'] == '111'].sort_values('Monetary', ascending=False).reset_index().head(10)
 
-# In[26]:
 
 
-# Assign Loyalty Level to each customer
-Loyalty_Level = ['Platinum', 'Gold', 'Silver', 'Bronze']
-Score_cuts = pd.qcut(RFMScores.RFMScore, q=4, labels=Loyalty_Level)
-RFMScores['RFM_Loyalty_Level'] = Score_cuts.values
-RFMScores.reset_index().head()
-
-# Validate the data for RFMGroup = 111
-RFMScores[RFMScores['RFMGroup'] == '111'].sort_values('Monetary', ascending=False).reset_index().head(10)
-
-# In[28]:
-
-
-# Recency Vs Frequency
-graph = RFMScores.query("Monetary < 50000 and Frequency < 2000")
-
-plot_data = [
-    gobj.Scatter(
-        x=graph.query("RFM_Loyalty_Level == 'Bronze'")['Recency'],
-        y=graph.query("RFM_Loyalty_Level == 'Bronze'")['Frequency'],
-        mode='markers',
-        name='Bronze',
-        marker=dict(size=7,
-                    line=dict(width=1),
-                    color='blue',
-                    opacity=0.8
-                    )
-    ),
-    gobj.Scatter(
-        x=graph.query("RFM_Loyalty_Level == 'Silver'")['Recency'],
-        y=graph.query("RFM_Loyalty_Level == 'Silver'")['Frequency'],
-        mode='markers',
-        name='Silver',
-        marker=dict(size=9,
-                    line=dict(width=1),
-                    color='green',
-                    opacity=0.5
-                    )
-    ),
-    gobj.Scatter(
-        x=graph.query("RFM_Loyalty_Level == 'Gold'")['Recency'],
-        y=graph.query("RFM_Loyalty_Level == 'Gold'")['Frequency'],
-        mode='markers',
-        name='Gold',
-        marker=dict(size=11,
-                    line=dict(width=1),
-                    color='red',
-                    opacity=0.9
-                    )
-    ),
-    gobj.Scatter(
-        x=graph.query("RFM_Loyalty_Level == 'Platinum'")['Recency'],
-        y=graph.query("RFM_Loyalty_Level == 'Platinum'")['Frequency'],
-        mode='markers',
-        name='Platinum',
-        marker=dict(size=13,
-                    line=dict(width=1),
-                    color='black',
-                    opacity=0.9
-                    )
-    ),
-]
-
-plot_layout = gobj.Layout(
-    yaxis={'title': "Frequency"},
-    xaxis={'title': "Recency"},
-    title='Segments'
-)
-fig = gobj.Figure(data=plot_data, layout=plot_layout)
-po.iplot(fig)
+#
+# # Recency Vs Frequency
+# graph = RFMScores.query("Monetary < 50000 and Frequency < 2000")
+#
+# plot_data = [
+#     gobj.Scatter(
+#         x=graph.query("RFM_Loyalty_Level == 'Bronze'")['Recency'],
+#         y=graph.query("RFM_Loyalty_Level == 'Bronze'")['Frequency'],
+#         mode='markers',
+#         name='Bronze',
+#         marker=dict(size=7,
+#                     line=dict(width=1),
+#                     color='blue',
+#                     opacity=0.8
+#                     )
+#     ),
+#     gobj.Scatter(
+#         x=graph.query("RFM_Loyalty_Level == 'Silver'")['Recency'],
+#         y=graph.query("RFM_Loyalty_Level == 'Silver'")['Frequency'],
+#         mode='markers',
+#         name='Silver',
+#         marker=dict(size=9,
+#                     line=dict(width=1),
+#                     color='green',
+#                     opacity=0.5
+#                     )
+#     ),
+#     gobj.Scatter(
+#         x=graph.query("RFM_Loyalty_Level == 'Gold'")['Recency'],
+#         y=graph.query("RFM_Loyalty_Level == 'Gold'")['Frequency'],
+#         mode='markers',
+#         name='Gold',
+#         marker=dict(size=11,
+#                     line=dict(width=1),
+#                     color='red',
+#                     opacity=0.9
+#                     )
+#     ),
+#     gobj.Scatter(
+#         x=graph.query("RFM_Loyalty_Level == 'Platinum'")['Recency'],
+#         y=graph.query("RFM_Loyalty_Level == 'Platinum'")['Frequency'],
+#         mode='markers',
+#         name='Platinum',
+#         marker=dict(size=13,
+#                     line=dict(width=1),
+#                     color='black',
+#                     opacity=0.9
+#                     )
+#     ),
+# ]
+#
+# plot_layout = gobj.Layout(
+#     yaxis={'title': "Frequency"},
+#     xaxis={'title': "Recency"},
+#     title='Segments'
+# )
+# fig = gobj.Figure(data=plot_data, layout=plot_layout)
+# po.iplot(fig)
 #
 # # Frequency Vs Monetary
 # graph = RFMScores.query("Monetary < 50000 and Frequency < 2000")
