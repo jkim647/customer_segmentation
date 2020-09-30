@@ -11,7 +11,7 @@ import seaborn as sns
 import plotly.offline as po
 import plotly.graph_objs as gobj
 
-url = '/Users/zangjialin/AUT/AUT/Data Warehouse and Big Data/data.csv'
+url = '/Users/jskim/PycharmProjects/data.csv'
 
 Rtl_data = pd.read_csv(url, encoding='unicode_escape')
 
